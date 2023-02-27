@@ -1,0 +1,5 @@
+# ninja log v5
+0	2460	1677491830372889517	CMakeFiles/SkipList_RandomGen.dir/main.cpp.o	41f46b1979570bd3
+2461	3019	1677491830943397715	SkipList_RandomGen	eeb4e83a67feb464
+2	933	1677491917112547972	CMakeFiles/SkipList_RandomGen.dir/main.cpp.o	41f46b1979570bd3
+933	992	1677491917176028021	SkipList_RandomGen	eeb4e83a67feb464
