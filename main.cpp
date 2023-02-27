@@ -2,6 +2,10 @@
 #include <fstream>
 #include <vector>
 #include <random>
+#include <cmath>
+//TODO::change the value of SKIP_LISTS_P & SKIP_LISTS_SIZE
+const int SKIP_LISTS_SIZE = 1000;
+const int SKIP_LISTS_P = 8;
 
 using std::vector;
 using std::cout;
@@ -40,25 +44,25 @@ public:
         delete head;
         delete tail;
     };
-
+    //p = 1/2
     int randomLevel() { // func random level
-        int random_level = 1;
-        int seed = time(NULL);
-        static std::default_random_engine e(seed);
-        static std::uniform_int_distribution<int> u(0, 1);
-
-        while (u(e) && random_level < maxLevel)
-            random_level++;
-
-        return random_level;
+        int randomLevel = 1;
+        double cal = randomLevel;
+        while(random() % SKIP_LISTS_P == 0)
+            randomLevel++;
+        return (randomLevel < maxLevel) ? randomLevel : maxLevel;
     };
+
+
+
 
     skipNode<T> *insert(int k, T v) { // insert or update
         //get new node random level
         int x_level = randomLevel();
         skipNode<T> *newNode = nullptr;
         skipNode<T> *tmp = head;
-        newNode = find(k);
+        int tt;
+        newNode = find(k, tt);
         // find() to judge the node exists, yep : update
         //                                  nope: insert
         if (newNode) {//then lets update
@@ -77,12 +81,14 @@ public:
         return head;
     };
 
-    skipNode<T> *find(int k) {
+    skipNode<T> *find(int k, int &cnt) {
         skipNode<T> * tmp = head;
         int currentLevel = nodeLevel(tmp->next);
         for(int i = (currentLevel - 1); i > -1 ;i--) {
-            while(tmp->next[i] != nullptr && tmp->next[i]->key < k)
+            while (tmp->next[i] != nullptr && tmp->next[i]->key < k) {
                 tmp = tmp->next[i];
+                cnt++;
+            }
         }
         tmp = tmp->next[0];
         if(tmp->key == k) return tmp;
@@ -130,10 +136,37 @@ private:
         return nodeLevel;
     }; // return max level
 };
-
 int main() {
-    int maxLevel = 6;
+    int maxLevel = 20;
+    int search_time = 0;
     skipList<int> l(maxLevel, 0);
-    for(size_t i = 0; i < 50; i++) l.insert(i, i);
-    l.printNode();
+    for(size_t i = 0; i < SKIP_LISTS_SIZE; i++) {
+        l.insert(i, i);
+    }
+    unsigned long search_time_storage = 0;
+    for(int i = 0; i < 100000; i++) {
+        int q = rand() % SKIP_LISTS_SIZE;
+        l.find(q, search_time);
+        search_time_storage += search_time;
+//        cout << search_time_storage << endl;// cout debug
+        search_time = 0;
+    }
+    double ans = double(double(search_time_storage) / 100000);
+    cout << ans << endl;
+//    int randomLevel = 1;
+//    int ans[1000];
+//    for(int i = 1; i < 1000; i++) {
+//        ans[i] = rand() % 4;
+//        cout << ans[i];
+//    }
+//    cout << endl;
+//    int cnt = 1;
+//    for(int i = 1; i < 100; i++) {
+////        cout << ans[i];
+//        while (ans[cnt++] == 0)
+//            randomLevel++;
+//        cout << randomLevel;
+//        randomLevel = 1;
+//    }
+//    return 0;
 }
